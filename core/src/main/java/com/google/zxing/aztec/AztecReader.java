@@ -52,6 +52,17 @@ public final class AztecReader implements Reader {
     return decode(image, null);
   }
 
+  private void reportFoundResultPoints(Map<DecodeHintType, ?> hints, ResultPoint[] points) {
+    if (hints != null) {
+      ResultPointCallback rpcb = (ResultPointCallback) hints.get(DecodeHintType.NEED_RESULT_POINT_CALLBACK);
+      if (rpcb != null) {
+        for (ResultPoint point : points) {
+          rpcb.foundPossibleResultPoint(point);
+        }
+      }
+    }
+  }
+
   @Override
   public Result decode(BinaryBitmap image, Map<DecodeHintType,?> hints)
       throws NotFoundException, FormatException {
@@ -64,6 +75,7 @@ public final class AztecReader implements Reader {
     try {
       AztecDetectorResult detectorResult = detector.detect(false);
       points = detectorResult.getPoints();
+      reportFoundResultPoints(hints, points);
       decoderResult = new Decoder().decode(detectorResult);
     } catch (NotFoundException e) {
       notFoundException = e;
@@ -74,6 +86,7 @@ public final class AztecReader implements Reader {
       try {
         AztecDetectorResult detectorResult = detector.detect(true);
         points = detectorResult.getPoints();
+        reportFoundResultPoints(hints, points);
         decoderResult = new Decoder().decode(detectorResult);
       } catch (NotFoundException | FormatException e) {
         if (notFoundException != null) {
@@ -83,15 +96,6 @@ public final class AztecReader implements Reader {
           throw formatException;
         }
         throw e;
-      }
-    }
-
-    if (hints != null) {
-      ResultPointCallback rpcb = (ResultPointCallback) hints.get(DecodeHintType.NEED_RESULT_POINT_CALLBACK);
-      if (rpcb != null) {
-        for (ResultPoint point : points) {
-          rpcb.foundPossibleResultPoint(point);
-        }
       }
     }
 

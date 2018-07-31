@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 public abstract class ResultParser {
 
   private static final ResultParser[] PARSERS = {
+      new PolishVehicleIDParser(),
       new BookmarkDoCoMoResultParser(),
       new AddressBookDoCoMoResultParser(),
       new EmailDoCoMoResultParser(),
