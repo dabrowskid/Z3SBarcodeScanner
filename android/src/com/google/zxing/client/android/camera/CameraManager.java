@@ -237,10 +237,7 @@ public final class CameraManager {
     if (dim < hardMin) {
       return hardMin;
     }
-    if (dim > hardMax) {
-      return hardMax;
-    }
-    return dim;
+    return Math.min(dim, hardMax);
   }
 
   /**
